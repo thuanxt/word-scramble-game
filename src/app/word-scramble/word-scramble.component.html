@@ -1,0 +1,20 @@
+<p>
+  word-scramble works!
+</p>
+
+<div *ngFor="let char of splittedChars">
+  {{char}}
+</div>
+
+<div>{{inputWord}}</div>
+
+<div *ngFor="let word of predictedWords">
+  {{word}}
+</div>
+
+
+<div *ngIf="isHomePressed">
+  <div *ngFor="let word of wordScrambe.expectedWords">
+      {{word}}
+  </div>
+</div>
