@@ -1,20 +1,32 @@
-<p>
-  word-scramble works!
-</p>
 
-<div *ngFor="let char of splittedChars">
-  {{char}}
-</div>
+<div class="grid">
+  <div class="row">
+    <div *ngFor="let char of splittedChars" class="float-left pr-2 wh-3">
+        <button type="button" class="btn btn-primary btn-block">
+            {{(char | uppercase)}}
+        </button>
+    </div>
+  </div>
+  <div class="row">
+      <button type="button" class="btn btn-secondary btn-block">
+        {{inputWord | uppercase}}
+      </button>
+      <hr>
+  </div>
 
-<div>{{inputWord}}</div>
-
-<div *ngFor="let word of predictedWords">
-  {{word}}
-</div>
-
-
-<div *ngIf="isHomePressed">
-  <div *ngFor="let word of wordScrambe.expectedWords">
-      {{word}}
+  <div *ngFor="let word of predictedWords" class="row text-success">
+    {{word | uppercase}}  
+  </div>
+  
+  <div *ngIf="isHomePressed">
+    <div *ngFor="let word of wordScrambe.expectedWords" class="row text-danger">
+        {{word | uppercase}}
+    </div>
   </div>
 </div>
+
+
+
+
+
+
