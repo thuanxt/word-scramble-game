@@ -1,5 +1,9 @@
 
-<div class="grid">
+<div *ngIf="message.length > 0" class="alert alert-primary" role="alert">
+  {{message}}
+</div>
+
+<div *ngIf="!isEndOfGame" class="grid">
   <div class="row">
     <div *ngFor="let char of splittedChars" class="float-left pr-2 wh-3">
         <button type="button" class="btn btn-primary btn-block">
@@ -7,8 +11,8 @@
         </button>
     </div>
   </div>
-  <div class="row">
-      <button type="button" class="btn btn-secondary btn-block">
+  <div class="row h-3">
+      <button type="button" class="btn btn-secondary btn-block text-left">
         {{inputWord | uppercase}}
       </button>
       <hr>
@@ -19,7 +23,7 @@
   </div>
   
   <div *ngIf="isHomePressed">
-    <div *ngFor="let word of wordScrambe.expectedWords" class="row text-danger">
+    <div *ngFor="let word of leftWords" class="row text-danger">
         {{word | uppercase}}
     </div>
   </div>
