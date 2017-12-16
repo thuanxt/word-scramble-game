@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 // import component
 import { AppComponent } from './app.component';
 import { WordScrambleComponent } from './word-scramble/word-scramble.component';
+import { MessageComponent } from './message/message.component';
 
 // import service
 import { WordScrambleService } from './word-scramble.service';
@@ -17,7 +18,8 @@ import { WordScrambleService } from './word-scramble.service';
 @NgModule({
   declarations: [
     AppComponent,
-    WordScrambleComponent
+    WordScrambleComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,

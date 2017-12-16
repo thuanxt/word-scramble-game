@@ -1,7 +1,8 @@
-import { Component, OnInit , HostListener} from '@angular/core';
-import { WordScramble} from '../word-scramble';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { WordScramble } from '../word-scramble';
 import { KeyCode } from '../key-code.enum';
-import { WordScrambleService} from '../word-scramble.service';
+import { WordScrambleService } from '../word-scramble.service';
+import { MessageType } from '../message-type.enum';
 
 @Component({
   selector: 'app-word-scramble',
@@ -20,14 +21,13 @@ export class WordScrambleComponent implements OnInit {
   isComplete: boolean;
   wordId: number = 1;
   message: string;
+  messageType: MessageType;
   isEndOfGame: boolean;
 
   constructor(private wordScrambleService: WordScrambleService) { }
-  
+
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    // TODO remove when done
-    console.log(event);
     if (!this.isEndOfGame) {
       if (this.isComplete || this.isHomePressed) {
         // if all the words have been predicted successfully or Home is pressed, get the new word from the server
@@ -46,28 +46,30 @@ export class WordScrambleComponent implements OnInit {
         this.isHomePressed = true;
         // get all the words that have not been predicted
         this.leftWords = this.wordScramble.expectedWords.filter(word => !this.predictedWords.includes(word));
-        this.message = "Please refer the red words for the missing words, press any key the get the new challenge.";
+        this.setMessage("Please refer the red words for the missing ones, press any key to get the new challenge.", MessageType.INFO);
       } else if (event.keyCode === KeyCode.Enter) {
         // if Enter is pressed, check if the input word is valid
-        if (this.predictedWords.includes(this.inputWord)) {
-          this.message = "You have already predicted this word, please try another one."
+        if (!this.inputWord) {
+          this.setMessage("Please enter the character to form a word!", MessageType.WARNING);
+        } else if (this.predictedWords.includes(this.inputWord)) {
+          this.setMessage("You have already predicted this word, please try another one.", MessageType.WARNING);
         } else if (this.wordScramble.expectedWords.includes(this.inputWord)) {
           // if input word is valid, add to the predicted word list and clear the input word
           this.predictedWords.push(this.inputWord);
           this.inputWord = "";
-          this.message = "";
+          this.clearMessage();
           if (this.predictedWords.length === this.wordScramble.expectedWords.length) {
             this.isComplete = true;
-            this.message = "Congatulations! You have predicted all the words, please press any key to get the new challenge."
+            this.setMessage("Congatulations! You have predicted all the words, please press any key to get the new challenge.", MessageType.SUCCESS);
           }
-        }  else {
-          this.message = "This word is not valid. Please try the other one or press Home to display all the words."
+        } else {
+          this.setMessage("This word is not valid. Please try the other one or press Home to display all the words.", MessageType.ERROR);
         }
       } else {
-        this.message = "Please only enter the character in the given list.";
+        this.setMessage("Please only enter the character in the given list.", MessageType.WARNING);
       }
     }
-  }  
+  }
 
   ngOnInit() {
     this.isHomePressed = false;
@@ -76,33 +78,42 @@ export class WordScrambleComponent implements OnInit {
     this.inputWord = "";
     this.predictedWords = [];
     this.leftWords = [];
-    this.message = "";
+    this.clearMessage();
     this.getWord(this.wordId++);
   }
 
-  private splitWord(word:string) {
+  private splitWord(word: string) {
     let result = new Array<string>(word.length);
     let randInt = Math.floor(Math.random() * (word.length - 1)) + 1;
-    console.log(randInt);
     for (let i = 0; i < word.length; i++) {
       result[(i + randInt) % word.length] = word[i];
     }
     return result;
   }
 
-  getWord(id: number) : void {
+  getWord(id: number): void {
     this.wordScrambleService.getWordScramble(id)
       .subscribe(wordScramble => {
-          this.wordScramble = wordScramble;
-          if (this.wordScramble.word) {
-            this.splittedChars = this.splitWord(this.wordScramble.word);
-            this.isEndOfGame = false;
-          } else {
-            this.isEndOfGame = true;
-            this.message = "End of game!";
-          }
+        this.wordScramble = wordScramble;
+        if (this.wordScramble.word) {
+          this.splittedChars = this.splitWord(this.wordScramble.word);
+          this.isEndOfGame = false;
+        } else {
+          this.isEndOfGame = true;
+          this.setMessage("End of game!", MessageType.INFO);
         }
+      }
       );
+  }
+
+  private setMessage(message: string, type: MessageType) {
+    this.message = message;
+    this.messageType = type;
+  }
+
+  private clearMessage() {
+    this.message = "";
+    this.messageType = MessageType.INFO;
   }
 
 }
